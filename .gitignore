@@ -1,23 +1,45 @@
-dist
-dist-*
-cabal-dev
-*.o
+# Go-Build-Artefakte
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+vendor/
+*.test
+*.out
+
+# Haskell-Build-Artefakte
 *.hi
-*.hie
-*.chi
-*.chs.h
+*.o
 *.dyn_o
 *.dyn_hi
-.hpc
-.hsenv
-.cabal-sandbox/
-cabal.sandbox.config
 *.prof
 *.aux
-*.hp
-*.eventlog
+
+# Cabal spezifisch
+dist/
+dist-newstyle/
+.cabal-sandbox/
+cabal.sandbox.config
+*.cabal.project.local
+*.buildinfo
+*.ghc.environment.*
+
+# Stack spezifisch
 .stack-work/
-cabal.project.local
-cabal.project.local~
-.HTF/
-.ghc.environment.*
+.stack/
+*.stack-work/
+
+# Generierte Dateien und temporäre Verzeichnisse
+*.haddock
+*.log
+*.tmp
+*.cache/
+
+# Editor-spezifische Dateien
+*.swp
+*.swo
+*.tmp
+.idea/
+.vscode/
+*.DS_Store
