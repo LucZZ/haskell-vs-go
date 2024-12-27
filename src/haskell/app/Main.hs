@@ -1,62 +1,66 @@
-module Main where
+module Main(main) where
 
--- x row index, y column index
+import Graphics.Gloss
+import Graphics.Gloss.Interface.Pure.Game
 
-type Cell = Bool
-type Grid = [[Cell]]
+rows :: Int
+rows = 50
+colums :: Int
+colums = 50
+padding :: Int
+padding = 100
+dimensions :: Int
+dimensions = 10
 
-initGrid :: Grid
-initGrid = 
-    [ [False, False, False, False, False, False, False, False, False],
-      [False, False, True, False, False, False, False, False, False],
-      [False, False, False, True, False, False, False, False, False],
-      [False, True, True, True, False, False, False, False, False],
-      [False, False, False, False, False, False, False, False, False],
-      [False, False, False, False, False, False, False, False, False],
-      [False, False, False, False, False, False, False, False, False],
-      [False, False, False, False, False, False, False, False, False] ]
+windowWidth :: Int
+windowWidth = padding * 2 + rows * dimensions
 
-drawGridSimple :: Grid -> IO ()
-drawGridSimple [] = return ()
-drawGridSimple (row:rows) = do
-    putStrLn (map drawCellSimple row)
-    drawGridSimple rows
-  where
-    drawCellSimple :: Bool -> Char
-    drawCellSimple True = 'X'
-    drawCellSimple False = '.'
+windowHeight :: Int
+windowHeight = padding * 2 + colums * dimensions
 
-cellInGrid :: Grid -> Int -> Int -> Bool
-cellInGrid grid x y = x >= 0 && y >= 0 && x < length grid && y < length (head grid)
+window :: Display
+window = InWindow "Conway's Game of Life" (windowWidth, windowHeight) (0, 0)
 
-countAliveNeighbours :: Grid -> Int -> Int -> Int
-countAliveNeighbours grid x y = 
-    length [() | i <- [x-1..x+1], j <- [y-1..y+1], i /= x || j /= y, cellInGrid grid i j, grid !! i !! j]
+background :: Color
+background = white
 
-nextStateForCell :: Grid -> Int -> Int -> Cell
-nextStateForCell grid x y = 
-    let neighbours = countAliveNeighbours grid x y
-        cell = grid !! x !! y
-    in neighbours == 3 || (cell && neighbours == 2)
+data GameState = Game
+    {
+        isRunning :: Bool,
+        time :: Float,
+        fps :: Int
+    }
 
-nextGeneration :: Grid -> Grid
-nextGeneration grid = 
-    [[nextStateForCell grid x y | y <- [0..length (head grid) - 1]]
-                               | x <- [0..length grid - 1]]
+initialGame :: GameState
+initialGame = Game
+    {
+        isRunning = False,
+        time = 0.0,
+        fps = 20
+    }
 
-gameOfLife :: Grid -> Int -> IO ()
-gameOfLife _ 0 = return ()
-gameOfLife grid n = do
-    drawGridSimple grid
-    putStrLn ""
-    gameOfLife (nextGeneration grid) (n - 1)
+render state = pictures $ grid
 
-neighborCounts :: Grid -> [[Int]]
-neighborCounts grid = 
-    [[countAliveNeighbours grid x y | y <- [0..length (head grid) - 1]]
-                                    | x <- [0..length grid - 1]]
+w = fromIntegral windowWidth - fromIntegral padding
+h = fromIntegral windowHeight - fromIntegral padding
 
+grid = verticalLines ++ horizontalLines ++ [rectangleWire w h]
+    where verticalLines = foldr (\a -> \b -> vLine a:b) [] [0..fromIntegral colums] 
+          vLine a = color  (greyN 0.5)  (line [ (w/fromIntegral colums*a-w/2, -h/2), (w/fromIntegral colums*a-w/2, h-h/2) ])
+          horizontalLines = foldr (\a -> \b -> hLine a:b) [] [0..fromIntegral rows] 
+          hLine a = color  (greyN 0.5)  (line [ (-w/2, h/fromIntegral rows*a-h/2), (w-w/2, h/fromIntegral rows*a-h/2) ])
+
+handleKeys _ state = state
+
+update deltatime state = state
 
 main :: IO ()
-main = gameOfLife initGrid 20
+main = play 
+            window
+            background
+            60
+            initialGame
+            render
+            handleKeys
+            update
 
