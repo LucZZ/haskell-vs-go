@@ -4,19 +4,19 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 
 rows :: Int
-rows = 50
+rows = 100
 colums :: Int
-colums = 50
+colums = 100
 padding :: Int
 padding = 100
 dimensions :: Int
 dimensions = 10
 
 windowWidth :: Int
-windowWidth = padding * 2 + rows * dimensions
+windowWidth = padding  + rows * dimensions
 
 windowHeight :: Int
-windowHeight = padding * 2 + colums * dimensions
+windowHeight = padding  + colums * dimensions
 
 window :: Display
 window = InWindow "Conway's Game of Life" (windowWidth, windowHeight) (0, 0)
@@ -41,14 +41,22 @@ initialGame = Game
 
 render state = pictures $ grid
 
-w = fromIntegral windowWidth - fromIntegral padding
-h = fromIntegral windowHeight - fromIntegral padding
+w = fromIntegral windowWidth - fromIntegral padding 
+h = fromIntegral windowHeight - fromIntegral padding 
+
+d = fromIntegral dimensions
 
 grid = verticalLines ++ horizontalLines ++ [rectangleWire w h]
-    where verticalLines = foldr (\a -> \b -> vLine a:b) [] [0..fromIntegral colums] 
-          vLine a = color  (greyN 0.5)  (line [ (w/fromIntegral colums*a-w/2, -h/2), (w/fromIntegral colums*a-w/2, h-h/2) ])
-          horizontalLines = foldr (\a -> \b -> hLine a:b) [] [0..fromIntegral rows] 
-          hLine a = color  (greyN 0.5)  (line [ (-w/2, h/fromIntegral rows*a-h/2), (w-w/2, h/fromIntegral rows*a-h/2) ])
+    where
+    verticalLines = [vLine a | a <- [0 .. fromIntegral rows]]
+    vLine a = color (greyN 0.5) $ line [(a * d - w / 2, -(h / 2)), (a * d - w / 2, h / 2)]
+    horizontalLines = [hLine b | b <- [0 .. fromIntegral colums]]
+    hLine b = color (greyN 0.5) $ line [(-(w / 2), b * d - h / 2), (w / 2, b * d - h / 2)]
+
+
+drawCell (x0, y0) = translate (x0 * d - w / 2 + d / 2) (-(y0 * d) + h / 2 - d / 2) square
+
+square = rectangleSolid d d
 
 handleKeys _ state = state
 
