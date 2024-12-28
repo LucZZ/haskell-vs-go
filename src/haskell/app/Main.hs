@@ -14,8 +14,6 @@ background = white
 data GameState = Game
     {
         isRunning :: Bool,
-        time :: Float,
-        fps :: Int,
         aliveCells :: [(Int,Int)]
     }
 
@@ -23,8 +21,6 @@ initialGame :: GameState
 initialGame = Game
     {
         isRunning = False,
-        time = 0.0,
-        fps = 20,
         aliveCells = [(1,1),(2,2),(0,3),(1,3),(2,3)]
     }
 
