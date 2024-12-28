@@ -2,21 +2,8 @@ module Main(main) where
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
-
-rows :: Int
-rows = 100
-colums :: Int
-colums = 100
-padding :: Int
-padding = 100
-dimensions :: Int
-dimensions = 10
-
-windowWidth :: Int
-windowWidth = padding  + rows * dimensions
-
-windowHeight :: Int
-windowHeight = padding  + colums * dimensions
+import Const
+import GameOfLife
 
 window :: Display
 window = InWindow "Conway's Game of Life" (windowWidth, windowHeight) (0, 0)
@@ -29,7 +16,7 @@ data GameState = Game
         isRunning :: Bool,
         time :: Float,
         fps :: Int,
-        aliveCells :: [(Float,Float)]
+        aliveCells :: [(Int,Int)]
     }
 
 initialGame :: GameState
@@ -45,29 +32,25 @@ render :: GameState -> Picture
 render state = pictures $ grid ++ aliveCellsGrid
     where aliveCellsGrid = [drawCell a b | (a, b) <- aliveCells state]
 
-w = fromIntegral windowWidth - fromIntegral padding
-h = fromIntegral windowHeight - fromIntegral padding
-
-d = fromIntegral dimensions
-
 grid :: [Picture]
-grid = verticalLines ++ horizontalLines ++ [rectangleWire w h]
+grid = verticalLines ++ horizontalLines ++ [rectangleWire gridWidth gridHeight]
     where
     verticalLines = [vLine a | a <- [0 .. fromIntegral rows]]
-    vLine a = color (greyN 0.5) $ line [(a * d - w / 2, -(h / 2)), (a * d - w / 2, h / 2)]
+    vLine a = color (greyN 0.5) $ line [(a * cellDimensionsFloat - gridWidth / 2, -(gridHeight / 2)), (a * cellDimensionsFloat - gridWidth / 2, gridHeight / 2)]
     horizontalLines = [hLine b | b <- [0 .. fromIntegral colums]]
-    hLine b = color (greyN 0.5) $ line [(-(w / 2), b * d - h / 2), (w / 2, b * d - h / 2)]
+    hLine b = color (greyN 0.5) $ line [(-(gridWidth / 2), b * cellDimensionsFloat - gridHeight / 2), (gridWidth / 2, b * cellDimensionsFloat - gridHeight / 2)]
 
-drawCell :: Float -> Float -> Picture
-drawCell x0 y0 = translate (x0 * d - w / 2 + d / 2) (-(y0 * d) + h / 2 - d / 2) square
+drawCell :: Int -> Int -> Picture
+drawCell x0 y0 = translate (fromIntegral x0 * cellDimensionsFloat - gridWidth / 2 + cellDimensionsFloat / 2) (-(fromIntegral y0 * cellDimensionsFloat) + gridHeight / 2 - cellDimensionsFloat / 2) square
 
 square :: Picture
-square = rectangleSolid d d
+square = rectangleSolid cellDimensionsFloat cellDimensionsFloat
 
+handleKeys :: Event -> GameState -> GameState
 handleKeys (EventKey (MouseButton LeftButton) Down _ (xPos, yPos)) state =
     let
-        gridX = (xPos + w / 2) / d
-        gridY = -((yPos - h / 2) / d)
+        gridX = (xPos + gridWidth / 2) / cellDimensionsFloat
+        gridY = -((yPos - gridHeight / 2) / cellDimensionsFloat)
         roundedX = fromIntegral (floor gridX :: Int)
         roundedY = fromIntegral (floor gridY :: Int)
         newCell = (roundedX, roundedY)
@@ -80,11 +63,12 @@ handleKeys (EventKey (SpecialKey KeySpace) Down _ _) state = state {isRunning = 
 
 handleKeys _ state = state 
 
+update :: p -> GameState -> GameState
 update deltatime state 
     | isRunning state = state { aliveCells = updatedCells }
     | otherwise = state
   where
-    updatedCells = map (\(x, y) -> (x + 1, y + 1)) (aliveCells state) --TODO
+    updatedCells = gameStep (aliveCells state) --TODO
 
 main :: IO ()
 main = play 
