@@ -51,9 +51,12 @@ handleKeys (EventKey (MouseButton LeftButton) Down _ (xPos, yPos)) state =
         roundedY = fromIntegral (floor gridY :: Int)
         newCell = (roundedX, roundedY)
     in
-        if newCell `elem` aliveCells state
+        if roundedX < 0 || roundedX > rows - 1 || roundedY < 0 || roundedY > colums - 1
         then state
+        else if newCell `elem` aliveCells state
+        then state { aliveCells = filter (/= newCell) (aliveCells state) }
         else state { aliveCells = newCell : aliveCells state }
+
 
 handleKeys (EventKey (SpecialKey KeySpace) Down _ _) state = state {isRunning = not (isRunning state)}
 
@@ -64,7 +67,7 @@ update deltatime state
     | isRunning state = state { aliveCells = updatedCells }
     | otherwise = state
   where
-    updatedCells = gameStep (aliveCells state) --TODO
+    updatedCells = gameStep (aliveCells state)
 
 main :: IO ()
 main = play 
