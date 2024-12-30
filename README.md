@@ -29,5 +29,5 @@ This project explores the functional programming aspects of Haskell and Go by im
     haskell: user error (unknown GLUT entry glutInit)
     ```
     This happens because GLUT is not correctly configured by Cabal and Gloss
-    A easy solution for this is to place the "glut32.dll" found in TODO in C:\Windows\System32
+    A easy solution for this is to place the "glut32.dll" found in dll\glut32.dll in C:\Windows\System32
 
