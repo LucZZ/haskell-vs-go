@@ -11,7 +11,7 @@ This project explores the functional programming aspects of Haskell and Go by im
 
 ## How to Build and Run
 
-### Haskell
+### Haskell (src\haskell)
 1. Ensure GHC and Cabal is installed
 2. Build the project:
    ```bash

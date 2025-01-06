@@ -5,16 +5,10 @@ import Graphics.Gloss.Interface.Pure.Game
 import Const
 import GameOfLife
 
-window :: Display
-window = InWindow "Conway's Game of Life" (windowWidth, windowHeight) (0, 0)
-
-background :: Color
-background = white
-
 data GameState = Game
     {
         isRunning :: Bool,
-        aliveCells :: [(Int,Int)]
+        aliveCells :: [Cell]
     }
 
 initialGame :: GameState
@@ -23,6 +17,12 @@ initialGame = Game
         isRunning = False,
         aliveCells = [(1,1),(2,2),(0,3),(1,3),(2,3)]
     }
+
+window :: Display
+window = InWindow "Conway's Game of Life" (windowWidth, windowHeight) (0, 0)
+
+background :: Color
+background = white
 
 render :: GameState -> Picture
 render state = pictures $ grid ++ aliveCellsGrid
@@ -63,7 +63,7 @@ handleKeys (EventKey (SpecialKey KeySpace) Down _ _) state = state {isRunning = 
 handleKeys _ state = state 
 
 update :: p -> GameState -> GameState
-update deltatime state 
+update _ state 
     | isRunning state = state { aliveCells = updatedCells }
     | otherwise = state
   where
