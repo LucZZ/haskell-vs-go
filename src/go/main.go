@@ -17,7 +17,6 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-	// Toggle pause/resume on spacebar press
 	if ebiten.IsKeyPressed(ebiten.KeySpace) {
 		if !g.prevSpace {
 			g.isRunning = !g.isRunning
@@ -27,28 +26,23 @@ func (g *Game) Update() error {
 		g.prevSpace = false
 	}
 
-	// Update game logic if running
 	if g.isRunning {
 		g.frame++
 		if g.frame%10 == 0 {
 			g.liveCells = gameStep(g.liveCells)
 		}
 	} else {
-		// Handle mouse input to add/remove cells when paused
 		isMousePressed := ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
-		if isMousePressed && !g.prevMouse { // Only process on the first click
+		if isMousePressed && !g.prevMouse {
 			x, y := ebiten.CursorPosition()
 			cellX := (x - padding) / cellDimensions
 			cellY := (y - padding) / cellDimensions
 
-			// Ensure the click is within grid boundaries
 			if cellX >= 0 && cellX < rows && cellY >= 0 && cellY < columns {
 				cell := Coordinate{X: cellX, Y: cellY}
 				if g.cellExists(cell) {
-					// Remove the cell if it exists
 					g.removeCell(cell)
 				} else {
-					// Add the cell if it doesn't exist
 					g.liveCells = append(g.liveCells, cell)
 				}
 			}
