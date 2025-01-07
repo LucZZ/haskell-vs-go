@@ -7,7 +7,7 @@ This project explores the functional programming aspects of Haskell and Go by im
   - Built with **Cabal** for build and package management and **Gloss** for UI elements
 
 - **Go Implementation**:
-  - Only the core logic is implemented without the UI
+  - Build with **Go** and [**Ebitenengine V2**](https://github.com/hajimehoshi/ebiten) for UI elements
 
 ## How to Build and Run
 
