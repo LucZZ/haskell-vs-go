@@ -89,32 +89,47 @@ func (g *GameState) Draw(screen *ebiten.Image) {
 	screen.Fill(color.White)
 
 	gridColor := color.Black
-	for x := 0; x <= rows; x++ {
-		startX := float32(padding + x*cellDimensions)
-		startY := float32(padding)
-		endX := startX
-		endY := float32(padding) + gridHeight
-		vector.StrokeLine(screen, startX, startY, endX, endY, 1, gridColor, false)
-	}
-	for y := 0; y <= columns; y++ {
-		startX := float32(padding)
-		startY := float32(padding + y*cellDimensions)
-		endX := float32(padding) + gridWidth
-		endY := startY
-		vector.StrokeLine(screen, startX, startY, endX, endY, 1, gridColor, false)
-	}
+	drawVerticalLines(screen, rows, gridColor)
+	drawHorizontalLines(screen, columns, gridColor)
 
 	cellColor := color.Black
-	for _, cell := range g.liveCells {
-		x := float64(padding + cell.X*cellDimensions)
-		y := float64(padding + cell.Y*cellDimensions)
-		rect := ebiten.NewImage(cellDimensions, cellDimensions)
-		rect.Fill(cellColor)
+	drawCells(screen, g.liveCells, cellColor)
+}
 
-		opts := &ebiten.DrawImageOptions{}
-		opts.GeoM.Translate(x, y)
-		screen.DrawImage(rect, opts)
+func drawVerticalLines(screen *ebiten.Image, index int, color color.Color) {
+	if index < 0 {
+		return
 	}
+	x := float32(padding + index*cellDimensions)
+	vector.StrokeLine(screen, x, float32(padding), x, float32(padding)+gridHeight, 1, color, false)
+	drawVerticalLines(screen, index-1, color)
+}
+
+func drawHorizontalLines(screen *ebiten.Image, index int, color color.Color) {
+	if index < 0 {
+		return
+	}
+	y := float32(padding + index*cellDimensions)
+	vector.StrokeLine(screen, float32(padding), y, float32(padding)+gridWidth, y, 1, color, false)
+	drawHorizontalLines(screen, index-1, color)
+}
+
+func drawCells(screen *ebiten.Image, cells []Cell, color color.Color) {
+	if len(cells) == 0 {
+		return
+	}
+	cell := cells[0]
+	x := float64(padding + cell.X*cellDimensions)
+	y := float64(padding + cell.Y*cellDimensions)
+
+	rect := ebiten.NewImage(cellDimensions, cellDimensions)
+	rect.Fill(color)
+
+	opts := &ebiten.DrawImageOptions{}
+	opts.GeoM.Translate(x, y)
+	screen.DrawImage(rect, opts)
+
+	drawCells(screen, cells[1:], color)
 }
 
 func (g *GameState) Layout(outsideWidth, outsideHeight int) (int, int) {

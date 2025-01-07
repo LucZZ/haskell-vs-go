@@ -18,4 +18,4 @@ neighbors :: Int -> Int -> [Cell]
 neighbors x0 y0 = [(x, y) | x <- [(x0-1)..(x0+1)], y <- [(y0-1)..(y0+1)], (x, y) /= (x0, y0), cellInBounds x y]
 
 cellInBounds :: Int -> Int -> Bool
-cellInBounds x y = x >= 0 && y >= 0 && x < columns && y < rows
+cellInBounds x y = x >= 0 && y >= 0 && x < rows && y < columns

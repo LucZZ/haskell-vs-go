@@ -5,7 +5,7 @@ type Cell struct {
 }
 
 func cellInBounds(x, y int) bool {
-	return x >= 0 && y >= 0 && x < columns && y < rows
+	return x >= 0 && y >= 0 && x < rows && y < columns
 }
 
 func rangeInt(start, end int) []int {
