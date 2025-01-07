@@ -123,7 +123,7 @@ func (g *GameState) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
 	initialLiveCells := []Coordinate{
-		{X: 10, Y: 10}, {X: 11, Y: 10}, {X: 12, Y: 10},
+		{X: 1, Y: 1}, {X: 2, Y: 2}, {X: 0, Y: 3}, {X: 1, Y: 3}, {X: 2, Y: 3},
 	}
 
 	game := &GameState{liveCells: initialLiveCells, isRunning: false, prevSpace: false, prevMouse: false}
