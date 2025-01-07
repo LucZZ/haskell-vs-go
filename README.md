@@ -4,7 +4,7 @@ This project explores the functional programming aspects of Haskell and Go by im
 
 ## Project Overview
 - **Haskell Implementation**:
-  - Built with **Cabal** for build and package management and **Gloss** for UI elements
+  - Built with [**Cabal**](https://github.com/haskell/cabal) for build and package management and [**Gloss**](https://github.com/benl23x5/gloss) for UI elements
 
 - **Go Implementation**:
   - Build with **Go** and [**Ebitenengine V2**](https://github.com/hajimehoshi/ebiten) for UI elements
@@ -31,3 +31,18 @@ This project explores the functional programming aspects of Haskell and Go by im
     This happens because GLUT is not correctly configured by Cabal and Gloss
     A easy solution for this is to place the "glut32.dll" found in dll\glut32.dll in C:\Windows\System32
 
+### Go (src\go)
+1. Ensure Go is installed
+2. Run the project:
+  ```bash
+  go run .
+  ```
+3. Build and run the project
+  ```bash
+  go build
+  .\haskell-vs-go.exe
+  ```
+4. Run tests (only the gameOfLife.go file is unit tested)
+  ```bash
+  go test -v
+  ```
