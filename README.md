@@ -11,7 +11,7 @@ This project explores the functional programming aspects of Haskell and Go by im
 
 ## Program Structure
 ### Overview
-  The each project is devided into the same three modules:
+  The each project is divided into the same three modules:
   - const.go, Const.hs: Defines constants used across the application, such as grid size, row and column count, and other configurations.
   - gameOfLife.go, GameOfLife.hs: Contains the game logic for computing the next state of the grid based on the previous grid and the rules of Conway's Game of Life.
   - main.go, main.hs: Handles the user interface and user input.
