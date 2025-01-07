@@ -22,7 +22,7 @@ This project explores the functional programming aspects of Haskell and Go by im
   - Each GameEngine provides similar methods for the gameflow. 
   - The **main** method is used to setup the initial GameState and the necessary components for the UI
   - The **update** method is used to get the new GameState from the gamelogic module.
-  - The **draw** method is used to translage the GameState to the UI.
+  - The **draw** method is used to translate the GameState to the UI.
   - Key and Mouse presses are handled differently: In Haskell the method **handleKeys** is used for both. In Go the gameengine provides methods (**ebiten.IsKeyPressed(ebiten.KeySpace)**, **ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)**) for checking. These are used in the update method.
 
 ### GameOfLife logic
