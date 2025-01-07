@@ -9,7 +9,7 @@ import (
 )
 
 type GameState struct {
-	liveCells []Coordinate
+	liveCells []Cell
 	frame     int
 	isRunning bool
 
@@ -27,14 +27,14 @@ func (g *GameState) Update() error {
 	return nil
 }
 
-func handleMouseInput(cells []Coordinate, prevMouse bool, isMousePressed bool, cursorPosition func() (int, int)) ([]Coordinate, bool) {
+func handleMouseInput(cells []Cell, prevMouse bool, isMousePressed bool, cursorPosition func() (int, int)) ([]Cell, bool) {
 	if isMousePressed && !prevMouse {
 		x, y := cursorPosition()
 		cellX := (x - padding) / cellDimensions
 		cellY := (y - padding) / cellDimensions
 
 		if cellX >= 0 && cellX < rows && cellY >= 0 && cellY < columns {
-			cell := Coordinate{X: cellX, Y: cellY}
+			cell := Cell{X: cellX, Y: cellY}
 			if cellExists(cells, cell) {
 				cells = removeCell(cells, cell)
 			} else {
@@ -46,7 +46,7 @@ func handleMouseInput(cells []Coordinate, prevMouse bool, isMousePressed bool, c
 	return cells, isMousePressed
 }
 
-func updateFrame(frame int, cells []Coordinate, isRunning bool) (int, []Coordinate) {
+func updateFrame(frame int, cells []Cell, isRunning bool) (int, []Cell) {
 	if !isRunning {
 		return frame, cells
 	}
@@ -65,7 +65,7 @@ func updateRunningState(isRunning, prevSpace, isKeyPressed bool) (bool, bool) {
 	return newRunning, isKeyPressed
 }
 
-func cellExists(cells []Coordinate, cell Coordinate) bool {
+func cellExists(cells []Cell, cell Cell) bool {
 	if len(cells) == 0 {
 		return false
 	}
@@ -75,14 +75,14 @@ func cellExists(cells []Coordinate, cell Coordinate) bool {
 	return cellExists(cells[1:], cell)
 }
 
-func removeCell(cells []Coordinate, cell Coordinate) []Coordinate {
+func removeCell(cells []Cell, cell Cell) []Cell {
 	if len(cells) == 0 {
-		return []Coordinate{}
+		return []Cell{}
 	}
 	if cells[0] == cell {
 		return removeCell(cells[1:], cell)
 	}
-	return append([]Coordinate{cells[0]}, removeCell(cells[1:], cell)...)
+	return append([]Cell{cells[0]}, removeCell(cells[1:], cell)...)
 }
 
 func (g *GameState) Draw(screen *ebiten.Image) {
@@ -122,7 +122,7 @@ func (g *GameState) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
-	initialLiveCells := []Coordinate{
+	initialLiveCells := []Cell{
 		{X: 1, Y: 1}, {X: 2, Y: 2}, {X: 0, Y: 3}, {X: 1, Y: 3}, {X: 2, Y: 3},
 	}
 

@@ -1,6 +1,6 @@
 module Main where
 
--- x row index, y column index
+-- This is the first version of game of life, before GUI.
 
 type Cell = Bool
 type Grid = [[Cell]]
