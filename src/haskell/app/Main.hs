@@ -24,8 +24,8 @@ window = InWindow "Conway's Game of Life" (windowWidth, windowHeight) (0, 0)
 background :: Color
 background = white
 
-render :: GameState -> Picture
-render state = pictures $ grid ++ aliveCellsGrid
+draw :: GameState -> Picture
+draw state = pictures $ grid ++ aliveCellsGrid
     where aliveCellsGrid = [drawCell a b | (a, b) <- aliveCells state]
 
 grid :: [Picture]
@@ -75,7 +75,7 @@ main = play
             background
             10
             initialGame
-            render
+            draw
             handleKeys
             update
 

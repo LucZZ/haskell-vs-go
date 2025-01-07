@@ -8,7 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-type Game struct {
+type GameState struct {
 	liveCells []Coordinate
 	frame     int
 	isRunning bool
@@ -17,7 +17,7 @@ type Game struct {
 	prevMouse bool
 }
 
-func (g *Game) Update() error {
+func (g *GameState) Update() error {
 	g.isRunning, g.prevSpace = updateRunningState(g.isRunning, g.prevSpace, ebiten.IsKeyPressed(ebiten.KeySpace))
 
 	g.liveCells, g.prevMouse = handleMouseInput(g.liveCells, g.prevMouse, ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft), ebiten.CursorPosition)
@@ -85,7 +85,7 @@ func removeCell(cells []Coordinate, cell Coordinate) []Coordinate {
 	return append([]Coordinate{cells[0]}, removeCell(cells[1:], cell)...)
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
+func (g *GameState) Draw(screen *ebiten.Image) {
 	screen.Fill(color.White)
 
 	gridColor := color.Black
@@ -117,7 +117,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (g *GameState) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return windowWidth, windowHeight
 }
 
@@ -126,7 +126,7 @@ func main() {
 		{X: 10, Y: 10}, {X: 11, Y: 10}, {X: 12, Y: 10},
 	}
 
-	game := &Game{liveCells: initialLiveCells, isRunning: false, prevSpace: false, prevMouse: false}
+	game := &GameState{liveCells: initialLiveCells, isRunning: false, prevSpace: false, prevMouse: false}
 
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 	ebiten.SetWindowTitle("Conway's Game of Life")

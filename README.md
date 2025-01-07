@@ -9,6 +9,33 @@ This project explores the functional programming aspects of Haskell and Go by im
 - **Go Implementation**:
   - Build with **Go** and [**Ebitenengine V2**](https://github.com/hajimehoshi/ebiten) for UI elements
 
+## Program Structure
+### Overview
+  The each project is devided into the same three modules:
+  - const.go, Const.hs: Defines constants used across the application, such as grid size, row and column count, and other configurations.
+  - gameOfLife.go, GameOfLife.hs: Contains the game logic for computing the next state of the grid based on the previous grid and the rules of Conway's Game of Life.
+  - main.go, main.hs: Handles the user interface and user input.
+  
+## Flow
+
+### GUI
+  - Each GameEngine provides similar methods for the gameflow. 
+  - The **main** method is used to setup the initial GameState and the necessary components for the UI
+  - The **update** method is used to get the new GameState from the gamelogic module.
+  - The **draw** method is used to translage the GameState to the UI.
+  - Key and Mouse presses are handled differently: In Haskell the method **handleKeys** is used for both. In Go the gameengine provides methods (**ebiten.IsKeyPressed(ebiten.KeySpace)**, **ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)**) for checking. These are used in the update method.
+
+### GameOfLife logic
+1. Rules:
+  - Dead -> Alive: 3 neighbors
+  - Dead -> Dead: more or less that 3 neighbors
+  - Alive -> Alive: 2 or 3 neighbors
+  - Alive -> Dead: less that 2 or more that 3 neighbors
+  - Extra rule: In the board edges theneighbors are always dead to provide a natural border
+2. Flow
+  - **gameStep** method gets the current alive neighbors as x and y coordinates and returns a list of the next generation.
+  - in **gameStep** the neighbors are counted from x-1, y-1 to x+1, y+1 and based on the rules the next generation is calculated
+
 ## How to Build and Run
 
 ### Haskell (src\haskell)
@@ -29,8 +56,7 @@ This project explores the functional programming aspects of Haskell and Go by im
     haskell: user error (unknown GLUT entry glutInit)
     ```
     This happens because GLUT is not correctly configured by Cabal and Gloss.
-    
-    A easy solution for this is to place the "glut32.dll" found in dll\glut32.dll in C:\Windows\System32
+    A easy solution for Windows this is to place the "glut32.dll" found in dll\glut32.dll in C:\Windows\System32
 
 ### Go (src\go)
 1. Ensure Go is installed
