@@ -37,6 +37,7 @@ This project explores the functional programming aspects of Haskell and Go by im
   - in **gameStep** the neighbors are counted from x-1, y-1 to x+1, y+1 and based on the rules the next generation is calculated
 
 3. Flowdiagram
+
 ![](images/Flow.jpg)
 
 ## How to Build and Run
