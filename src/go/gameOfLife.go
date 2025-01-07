@@ -19,6 +19,9 @@ func cartesianProduct(xs, ys []int) []Coordinate {
 	if len(xs) == 0 {
 		return nil
 	}
+	if len(ys) == 0 {
+		return []Coordinate{}
+	}
 	head := xs[0]
 	tail := xs[1:]
 	return append(mapSlice(ys, func(y int) Coordinate {
