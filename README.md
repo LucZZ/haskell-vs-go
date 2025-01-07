@@ -31,7 +31,7 @@ This project explores the functional programming aspects of Haskell and Go by im
   - Dead -> Dead: more or less that 3 neighbors
   - Alive -> Alive: 2 or 3 neighbors
   - Alive -> Dead: less that 2 or more that 3 neighbors
-  - Extra rule: In the grid edges the neighbors are always dead to provide a natural border
+  - Extra rule: On the grid edges the neighbors are always dead to provide a natural border
 2. Flow
   - **gameStep** method gets the current alive neighbors as x and y coordinates and returns a list of the next generation.
   - in **gameStep** the neighbors are counted from x-1, y-1 to x+1, y+1 and based on the rules the next generation is calculated
