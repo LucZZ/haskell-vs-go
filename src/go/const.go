@@ -11,6 +11,6 @@ var (
 	cellDimensionsFloat float32 = float32(cellDimensions)
 	gridHeight          float32 = float32(columns) * cellDimensionsFloat
 	gridWidth           float32 = float32(rows) * cellDimensionsFloat
-	windowHeight        int     = columns*cellDimensions + padding
-	windowWidth         int     = rows*cellDimensions + padding
+	windowHeight        int     = columns*cellDimensions + padding*2
+	windowWidth         int     = rows*cellDimensions + padding*2
 )

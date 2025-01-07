@@ -12,63 +12,77 @@ type Game struct {
 	liveCells []Coordinate
 	frame     int
 	isRunning bool
+
 	prevSpace bool
 	prevMouse bool
 }
 
 func (g *Game) Update() error {
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		if !g.prevSpace {
-			g.isRunning = !g.isRunning
-		}
-		g.prevSpace = true
-	} else {
-		g.prevSpace = false
-	}
+	g.isRunning, g.prevSpace = updateRunningState(g.isRunning, g.prevSpace, ebiten.IsKeyPressed(ebiten.KeySpace))
 
-	if g.isRunning {
-		g.frame++
-		if g.frame%10 == 0 {
-			g.liveCells = gameStep(g.liveCells)
-		}
-	} else {
-		isMousePressed := ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
-		if isMousePressed && !g.prevMouse {
-			x, y := ebiten.CursorPosition()
-			cellX := (x - padding) / cellDimensions
-			cellY := (y - padding) / cellDimensions
+	g.liveCells, g.prevMouse = handleMouseInput(g.liveCells, g.prevMouse, ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft), ebiten.CursorPosition)
 
-			if cellX >= 0 && cellX < rows && cellY >= 0 && cellY < columns {
-				cell := Coordinate{X: cellX, Y: cellY}
-				if g.cellExists(cell) {
-					g.removeCell(cell)
-				} else {
-					g.liveCells = append(g.liveCells, cell)
-				}
-			}
-		}
-		g.prevMouse = isMousePressed
-	}
+	g.frame, g.liveCells = updateFrame(g.frame, g.liveCells, g.isRunning)
 
 	return nil
 }
 
-func (g *Game) cellExists(cell Coordinate) bool {
-	for _, c := range g.liveCells {
-		if c == cell {
-			return true
+func handleMouseInput(cells []Coordinate, prevMouse bool, isMousePressed bool, cursorPosition func() (int, int)) ([]Coordinate, bool) {
+	if isMousePressed && !prevMouse {
+		x, y := cursorPosition()
+		cellX := (x - padding) / cellDimensions
+		cellY := (y - padding) / cellDimensions
+
+		if cellX >= 0 && cellX < rows && cellY >= 0 && cellY < columns {
+			cell := Coordinate{X: cellX, Y: cellY}
+			if cellExists(cells, cell) {
+				cells = removeCell(cells, cell)
+			} else {
+				cells = append(cells, cell)
+			}
 		}
 	}
-	return false
+
+	return cells, isMousePressed
 }
 
-func (g *Game) removeCell(cell Coordinate) {
-	for i, c := range g.liveCells {
-		if c == cell {
-			g.liveCells = append(g.liveCells[:i], g.liveCells[i+1:]...)
-			return
-		}
+func updateFrame(frame int, cells []Coordinate, isRunning bool) (int, []Coordinate) {
+	if !isRunning {
+		return frame, cells
 	}
+	newFrame := frame + 1
+	if newFrame%10 == 0 {
+		cells = gameStep(cells)
+	}
+	return newFrame, cells
+}
+
+func updateRunningState(isRunning, prevSpace, isKeyPressed bool) (bool, bool) {
+	newRunning := isRunning
+	if !prevSpace && isKeyPressed {
+		newRunning = !isRunning
+	}
+	return newRunning, isKeyPressed
+}
+
+func cellExists(cells []Coordinate, cell Coordinate) bool {
+	if len(cells) == 0 {
+		return false
+	}
+	if cells[0] == cell {
+		return true
+	}
+	return cellExists(cells[1:], cell)
+}
+
+func removeCell(cells []Coordinate, cell Coordinate) []Coordinate {
+	if len(cells) == 0 {
+		return []Coordinate{}
+	}
+	if cells[0] == cell {
+		return removeCell(cells[1:], cell)
+	}
+	return append([]Coordinate{cells[0]}, removeCell(cells[1:], cell)...)
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -112,10 +126,7 @@ func main() {
 		{X: 10, Y: 10}, {X: 11, Y: 10}, {X: 12, Y: 10},
 	}
 
-	game := &Game{liveCells: initialLiveCells}
-
-	windowWidth = rows*cellDimensions + padding*2
-	windowHeight = columns*cellDimensions + padding*2
+	game := &Game{liveCells: initialLiveCells, isRunning: false, prevSpace: false, prevMouse: false}
 
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 	ebiten.SetWindowTitle("Conway's Game of Life")
