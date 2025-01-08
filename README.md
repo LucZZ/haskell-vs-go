@@ -61,6 +61,10 @@ This project explores the functional programming aspects of Haskell and Go by im
     ```
     This happens because GLUT is not correctly configured by Cabal and Gloss.
     A easy solution for Windows this is to place the "glut32.dll" found in dll\glut32.dll in C:\Windows\System32
+6. Run tests (only the GameOfLife.hs file is unit tested)
+    ```bash
+    cabal test
+    ```
 
 ### Go (src\go)
 1. Ensure Go is installed
