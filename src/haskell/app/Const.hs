@@ -3,7 +3,7 @@ module Const where
 columns :: Int
 columns = 100
 rows :: Int
-rows = 10
+rows = 100
 
 padding :: Int
 padding = 100
