@@ -4,10 +4,37 @@ type Cell struct {
 	X, Y int
 }
 
-func cellInBounds(x, y int) bool {
-	return x >= 0 && y >= 0 && x < rows && y < columns
+func gameStep(liveCells []Cell) []Cell {
+	return filter(allCells(), func(cell Cell) bool {
+		liveNeighborCount := len(filter(neighbors(cell.X, cell.Y), func(n Cell) bool {
+			return contains(liveCells, n)
+		}))
+
+		if contains(liveCells, cell) {
+			return liveNeighborCount == 2 || liveNeighborCount == 3
+		}
+		return liveNeighborCount == 3
+	})
 }
 
+func allCells() []Cell {
+	return cartesianProduct(rangeInt(0, columns-1), rangeInt(0, rows-1))
+}
+
+func neighbors(x, y int) []Cell {
+	return filter(cartesianProduct(
+		rangeInt(x-1, x+1),
+		rangeInt(y-1, y+1),
+	), func(c Cell) bool {
+		return (c.X != x || c.Y != y) && cellInBounds(c.X, c.Y)
+	})
+}
+
+func cellInBounds(x, y int) bool {
+	return x >= 0 && y >= 0 && x < columns && y < rows
+}
+
+// Helper methods
 func rangeInt(start, end int) []int {
 	if start > end {
 		return nil
@@ -17,7 +44,7 @@ func rangeInt(start, end int) []int {
 
 func cartesianProduct(xs, ys []int) []Cell {
 	if len(xs) == 0 {
-		return nil
+		return []Cell{}
 	}
 	if len(ys) == 0 {
 		return []Cell{}
@@ -56,30 +83,4 @@ func contains(xs []Cell, c Cell) bool {
 		return true
 	}
 	return contains(xs[1:], c)
-}
-
-func neighbors(x, y int) []Cell {
-	return filter(cartesianProduct(
-		rangeInt(x-1, x+1),
-		rangeInt(y-1, y+1),
-	), func(c Cell) bool {
-		return (c.X != x || c.Y != y) && cellInBounds(c.X, c.Y)
-	})
-}
-
-func allCells() []Cell {
-	return cartesianProduct(rangeInt(0, rows-1), rangeInt(0, columns-1))
-}
-
-func gameStep(liveCells []Cell) []Cell {
-	return filter(allCells(), func(cell Cell) bool {
-		liveNeighborCount := len(filter(neighbors(cell.X, cell.Y), func(n Cell) bool {
-			return contains(liveCells, n)
-		}))
-
-		if contains(liveCells, cell) {
-			return liveNeighborCount == 2 || liveNeighborCount == 3
-		}
-		return liveNeighborCount == 3
-	})
 }

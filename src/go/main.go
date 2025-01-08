@@ -17,33 +17,15 @@ type GameState struct {
 	prevMouse bool
 }
 
-func (g *GameState) Update() error {
-	g.isRunning, g.prevSpace = updateRunningState(g.isRunning, g.prevSpace, ebiten.IsKeyPressed(ebiten.KeySpace))
+func (g *GameState) Draw(screen *ebiten.Image) {
+	screen.Fill(color.White)
 
-	g.liveCells, g.prevMouse = handleMouseInput(g.liveCells, g.prevMouse, ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft), ebiten.CursorPosition)
+	gridColor := color.Black
+	drawVerticalLines(screen, columns, gridColor)
+	drawHorizontalLines(screen, rows, gridColor)
 
-	g.frame, g.liveCells = updateFrame(g.frame, g.liveCells, g.isRunning)
-
-	return nil
-}
-
-func handleMouseInput(cells []Cell, prevMouse bool, isMousePressed bool, cursorPosition func() (int, int)) ([]Cell, bool) {
-	if isMousePressed && !prevMouse {
-		x, y := cursorPosition()
-		cellX := (x - padding) / cellDimensions
-		cellY := (y - padding) / cellDimensions
-
-		if cellX >= 0 && cellX < rows && cellY >= 0 && cellY < columns {
-			cell := Cell{X: cellX, Y: cellY}
-			if cellExists(cells, cell) {
-				cells = removeCell(cells, cell)
-			} else {
-				cells = append(cells, cell)
-			}
-		}
-	}
-
-	return cells, isMousePressed
+	cellColor := color.Black
+	drawCells(screen, g.liveCells, cellColor)
 }
 
 func updateFrame(frame int, cells []Cell, isRunning bool) (int, []Cell) {
@@ -85,17 +67,6 @@ func removeCell(cells []Cell, cell Cell) []Cell {
 	return append([]Cell{cells[0]}, removeCell(cells[1:], cell)...)
 }
 
-func (g *GameState) Draw(screen *ebiten.Image) {
-	screen.Fill(color.White)
-
-	gridColor := color.Black
-	drawVerticalLines(screen, rows, gridColor)
-	drawHorizontalLines(screen, columns, gridColor)
-
-	cellColor := color.Black
-	drawCells(screen, g.liveCells, cellColor)
-}
-
 func drawVerticalLines(screen *ebiten.Image, index int, color color.Color) {
 	if index < 0 {
 		return
@@ -130,6 +101,35 @@ func drawCells(screen *ebiten.Image, cells []Cell, color color.Color) {
 	screen.DrawImage(rect, opts)
 
 	drawCells(screen, cells[1:], color)
+}
+
+func handleMouseInput(cells []Cell, prevMouse bool, isMousePressed bool, cursorPosition func() (int, int)) ([]Cell, bool) {
+	if isMousePressed && !prevMouse {
+		x, y := cursorPosition()
+		cellX := (x - padding) / cellDimensions
+		cellY := (y - padding) / cellDimensions
+
+		if cellX >= 0 && cellX < columns && cellY >= 0 && cellY < rows {
+			cell := Cell{X: cellX, Y: cellY}
+			if cellExists(cells, cell) {
+				cells = removeCell(cells, cell)
+			} else {
+				cells = append(cells, cell)
+			}
+		}
+	}
+
+	return cells, isMousePressed
+}
+
+func (g *GameState) Update() error {
+	g.isRunning, g.prevSpace = updateRunningState(g.isRunning, g.prevSpace, ebiten.IsKeyPressed(ebiten.KeySpace))
+
+	g.liveCells, g.prevMouse = handleMouseInput(g.liveCells, g.prevMouse, ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft), ebiten.CursorPosition)
+
+	g.frame, g.liveCells = updateFrame(g.frame, g.liveCells, g.isRunning)
+
+	return nil
 }
 
 func (g *GameState) Layout(outsideWidth, outsideHeight int) (int, int) {

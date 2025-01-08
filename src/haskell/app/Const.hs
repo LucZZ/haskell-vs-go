@@ -1,9 +1,9 @@
 module Const where
 
-rows :: Int
-rows = 100
 columns :: Int
 columns = 100
+rows :: Int
+rows = 10
 
 padding :: Int
 padding = 100
@@ -14,13 +14,13 @@ cellDimensionsFloat :: Float
 cellDimensionsFloat = fromIntegral cellDimenstions
 
 gridHeight :: Float
-gridHeight = fromIntegral columns * cellDimensionsFloat
+gridHeight = fromIntegral rows * cellDimensionsFloat
 
 gridWidth :: Float
-gridWidth = fromIntegral rows * cellDimensionsFloat
+gridWidth = fromIntegral columns * cellDimensionsFloat
 
 windowHeight :: Int
-windowHeight = columns * cellDimenstions + padding
+windowHeight = rows * cellDimenstions + padding
 
 windowWidth :: Int
-windowWidth = rows * cellDimenstions + padding
+windowWidth = columns * cellDimenstions + padding

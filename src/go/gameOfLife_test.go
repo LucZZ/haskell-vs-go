@@ -15,8 +15,8 @@ func TestCellInBounds(t *testing.T) {
 		{"Inside bounds", 2, 3, true},
 		{"Outside bounds (negative x)", -1, 3, false},
 		{"Outside bounds (negative y)", 3, -1, false},
-		{"Outside bounds (x too large)", columns, 3, false},
-		{"Outside bounds (y too large)", 3, rows, false},
+		{"Outside bounds (x too large)", rows, 3, false},
+		{"Outside bounds (y too large)", 3, columns, false},
 	}
 
 	for _, test := range tests {
@@ -62,9 +62,9 @@ func TestCartesianProduct(t *testing.T) {
 			{X: 1, Y: 3}, {X: 1, Y: 4},
 			{X: 2, Y: 3}, {X: 2, Y: 4},
 		}},
-		{"Empty xs", []int{}, []int{3, 4}, nil},
+		{"Empty xs", []int{}, []int{3, 4}, []Cell{}},
 		{"Empty ys", []int{1, 2}, []int{}, []Cell{}},
-		{"Both empty", []int{}, []int{}, nil},
+		{"Both empty", []int{}, []int{}, []Cell{}},
 		{"Single element in xs and ys", []int{1}, []int{2}, []Cell{
 			{X: 1, Y: 2},
 		}},

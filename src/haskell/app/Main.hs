@@ -31,9 +31,9 @@ draw state = pictures $ grid ++ aliveCellsGrid
 grid :: [Picture]
 grid = verticalLines ++ horizontalLines ++ [rectangleWire gridWidth gridHeight]
     where
-    verticalLines = [vLine a | a <- [0 .. fromIntegral rows]]
+    verticalLines = [vLine a | a <- [0 .. fromIntegral columns]]
     vLine a = color (greyN 0.5) $ line [(a * cellDimensionsFloat - gridWidth / 2, -(gridHeight / 2)), (a * cellDimensionsFloat - gridWidth / 2, gridHeight / 2)]
-    horizontalLines = [hLine b | b <- [0 .. fromIntegral columns]]
+    horizontalLines = [hLine b | b <- [0 .. fromIntegral rows]]
     hLine b = color (greyN 0.5) $ line [(-(gridWidth / 2), b * cellDimensionsFloat - gridHeight / 2), (gridWidth / 2, b * cellDimensionsFloat - gridHeight / 2)]
 
 drawCell :: Int -> Int -> Picture
@@ -51,7 +51,7 @@ handleKeys (EventKey (MouseButton LeftButton) Down _ (xPos, yPos)) state =
         roundedY = fromIntegral (floor gridY :: Int)
         newCell = (roundedX, roundedY)
     in
-        if roundedX < 0 || roundedX > rows - 1 || roundedY < 0 || roundedY > columns - 1
+        if roundedX < 0 || roundedX > columns - 1 || roundedY < 0 || roundedY > rows - 1
         then state
         else if newCell `elem` aliveCells state
         then state { aliveCells = filter (/= newCell) (aliveCells state) }
