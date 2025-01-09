@@ -28,45 +28,6 @@ func (g *GameState) Draw(screen *ebiten.Image) {
 	drawCells(screen, g.liveCells, cellColor)
 }
 
-func updateFrame(frame int, cells []Cell, isRunning bool) (int, []Cell) {
-	if !isRunning {
-		return frame, cells
-	}
-	newFrame := frame + 1
-	if newFrame%10 == 0 {
-		cells = gameStep(cells)
-	}
-	return newFrame, cells
-}
-
-func updateRunningState(isRunning, prevSpace, isKeyPressed bool) (bool, bool) {
-	newRunning := isRunning
-	if !prevSpace && isKeyPressed {
-		newRunning = !isRunning
-	}
-	return newRunning, isKeyPressed
-}
-
-func cellExists(cells []Cell, cell Cell) bool {
-	if len(cells) == 0 {
-		return false
-	}
-	if cells[0] == cell {
-		return true
-	}
-	return cellExists(cells[1:], cell)
-}
-
-func removeCell(cells []Cell, cell Cell) []Cell {
-	if len(cells) == 0 {
-		return []Cell{}
-	}
-	if cells[0] == cell {
-		return removeCell(cells[1:], cell)
-	}
-	return append([]Cell{cells[0]}, removeCell(cells[1:], cell)...)
-}
-
 func drawVerticalLines(screen *ebiten.Image, index int, color color.Color) {
 	if index < 0 {
 		return
@@ -103,6 +64,16 @@ func drawCells(screen *ebiten.Image, cells []Cell, color color.Color) {
 	drawCells(screen, cells[1:], color)
 }
 
+func (g *GameState) Update() error {
+	g.isRunning, g.prevSpace = updateRunningState(g.isRunning, g.prevSpace, ebiten.IsKeyPressed(ebiten.KeySpace))
+
+	g.liveCells, g.prevMouse = handleMouseInput(g.liveCells, g.prevMouse, ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft), ebiten.CursorPosition)
+
+	g.frame, g.liveCells = updateFrame(g.frame, g.liveCells, g.isRunning)
+
+	return nil
+}
+
 func handleMouseInput(cells []Cell, prevMouse bool, isMousePressed bool, cursorPosition func() (int, int)) ([]Cell, bool) {
 	if isMousePressed && !prevMouse {
 		x, y := cursorPosition()
@@ -122,14 +93,43 @@ func handleMouseInput(cells []Cell, prevMouse bool, isMousePressed bool, cursorP
 	return cells, isMousePressed
 }
 
-func (g *GameState) Update() error {
-	g.isRunning, g.prevSpace = updateRunningState(g.isRunning, g.prevSpace, ebiten.IsKeyPressed(ebiten.KeySpace))
+func updateFrame(frame int, cells []Cell, isRunning bool) (int, []Cell) {
+	if !isRunning {
+		return frame, cells
+	}
+	newFrame := frame + 1
+	if newFrame%6 == 0 {
+		cells = gameStep(cells)
+	}
+	return newFrame, cells
+}
 
-	g.liveCells, g.prevMouse = handleMouseInput(g.liveCells, g.prevMouse, ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft), ebiten.CursorPosition)
+func updateRunningState(isRunning, prevSpace, isKeyPressed bool) (bool, bool) {
+	newRunning := isRunning
+	if !prevSpace && isKeyPressed {
+		newRunning = !isRunning
+	}
+	return newRunning, isKeyPressed
+}
 
-	g.frame, g.liveCells = updateFrame(g.frame, g.liveCells, g.isRunning)
+func cellExists(cells []Cell, cell Cell) bool {
+	if len(cells) == 0 {
+		return false
+	}
+	if cells[0] == cell {
+		return true
+	}
+	return cellExists(cells[1:], cell)
+}
 
-	return nil
+func removeCell(cells []Cell, cell Cell) []Cell {
+	if len(cells) == 0 {
+		return []Cell{}
+	}
+	if cells[0] == cell {
+		return removeCell(cells[1:], cell)
+	}
+	return append([]Cell{cells[0]}, removeCell(cells[1:], cell)...)
 }
 
 func (g *GameState) Layout(outsideWidth, outsideHeight int) (int, int) {
